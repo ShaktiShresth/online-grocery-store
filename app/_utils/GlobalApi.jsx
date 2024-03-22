@@ -6,4 +6,9 @@ const axiosClient = axios.create({
 
 const getCategory = () => axiosClient.get("/categories?populate=*");
 
-export default { getCategory };
+const getSliders = () =>
+  axiosClient.get("/sliders?populate=*").then((response) => {
+    return response.data.data;
+  });
+
+export default { getCategory, getSliders };
