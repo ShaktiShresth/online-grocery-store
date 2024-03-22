@@ -11,4 +11,9 @@ const getSliders = () =>
     return response.data.data;
   });
 
-export default { getCategory, getSliders };
+const getCategoryList = () =>
+  axiosClient.get("/categories?populate=*").then((response) => {
+    return response.data.data;
+  });
+
+export default { getCategory, getSliders, getCategoryList };
