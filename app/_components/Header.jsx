@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import GlobalApi from "../_utils/GlobalApi";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const Header = () => {
   const [categoryList, setCategoryList] = useState([]);
@@ -46,22 +47,24 @@ const Header = () => {
             <DropdownMenuLabel>Browser Category</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {categoryList.map((category) => (
-              <DropdownMenuItem
-                key={category.id}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Image
-                  src={
-                    process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
-                    category?.attributes?.icon?.data[0]?.attributes?.url
-                  }
-                  unoptimized={true}
-                  alt="icon"
-                  width={26}
-                  height={26}
-                />
-                <h2>{category?.attributes?.name}</h2>
-              </DropdownMenuItem>
+              <Link href={`/products-category/${category.attributes.name}`}>
+                <DropdownMenuItem
+                  key={category.id}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Image
+                    src={
+                      process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                      category?.attributes?.icon?.data[0]?.attributes?.url
+                    }
+                    unoptimized={true}
+                    alt="icon"
+                    width={26}
+                    height={26}
+                  />
+                  <h2>{category?.attributes?.name}</h2>
+                </DropdownMenuItem>
+              </Link>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>

@@ -12,6 +12,9 @@ const ProductList = ({ productList }) => {
             index < 8 && <ProductItem key={index} product={product} />
         )}
       </div>
+      {productList.length === 0 && (
+        <p className="mt-20 text-center">This category is empty for now.</p>
+      )}
     </div>
   );
 };
