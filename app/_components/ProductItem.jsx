@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import ProductItemDetails from "./ProductItemDetails";
 
 const ProductItem = ({ product }) => {
   return (
@@ -17,7 +26,9 @@ const ProductItem = ({ product }) => {
         alt={product.attributes.name}
         className="h-[160px] w-[160px] object-contain"
       />
-      <h2 className="font-bold text-lg">{product.attributes.name}</h2>
+      <h2 className="font-bold text-lg line-clamp-1">
+        {product.attributes.name}
+      </h2>
       <div className="flex items-center gap-3">
         {product.attributes.sellingPrice && (
           <h2 className="font-bold text-lg">
@@ -32,12 +43,24 @@ const ProductItem = ({ product }) => {
           ${product.attributes.mrp}
         </h2>
       </div>
-      <Button
-        variant="outline"
-        className="text-primary hover:text-white hover:bg-primary"
-      >
-        Add to Cart
-      </Button>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="text-primary hover:text-white hover:bg-primary"
+          >
+            Add to Cart
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogDescription>
+              <ProductItemDetails product={product} />
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

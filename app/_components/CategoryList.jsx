@@ -8,7 +8,7 @@ const CategoryList = ({ categoryList }) => {
         {categoryList.map((category) => (
           <div
             key={category.id}
-            className="flex flex-col items-center bg-green-50 gap-2 p-4 rounded-lg cursor-pointer group hover:bg-green-200"
+            className="flex flex-col justify-center items-center bg-green-50 gap-2 p-4 rounded-lg cursor-pointer group hover:bg-green-200"
           >
             <Image
               src={
