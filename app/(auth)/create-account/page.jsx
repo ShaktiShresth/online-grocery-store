@@ -8,11 +8,13 @@ import Link from "next/link";
 import GlobalApi from "@/app/_utils/GlobalApi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LoaderIcon } from "lucide-react";
 
 const CreateAccount = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,15 +25,18 @@ const CreateAccount = () => {
   }, []);
 
   const onCreateAccount = () => {
+    setLoading(true);
     GlobalApi.registerUser(username, email, password).then(
       (resp) => {
         sessionStorage.setItem("user", JSON.stringify(resp.data.user));
         sessionStorage.setItem("jwt", resp.data.jwt);
         toast("Your account has been created.");
         router.push("/");
+        setLoading(false);
       },
       (e) => {
-        toast("Error while creating an account.");
+        toast(e?.response?.data?.error?.message);
+        setLoading(false);
       }
     );
   };
@@ -66,9 +71,13 @@ const CreateAccount = () => {
           />
           <Button
             onClick={() => onCreateAccount()}
-            disabled={!(username || email || password)}
+            disabled={!(username || email || password) || loading}
           >
-            Create an Account
+            {loading ? (
+              <LoaderIcon className="animate-spin" />
+            ) : (
+              "Create an Account"
+            )}
           </Button>
           <p className="text-center">
             Already have an account?{" "}
