@@ -1,7 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CircleUserRound, LayoutGrid, Search, ShoppingBag } from "lucide-react";
+import {
+  CircleUserRound,
+  LayoutGrid,
+  Search,
+  ShoppingBasket,
+} from "lucide-react";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -12,13 +17,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import GlobalApi from "../_utils/GlobalApi";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { UpdateCartContext } from "../_context/UpdateCartContext";
 
 const Header = () => {
   const [categoryList, setCategoryList] = useState([]);
+  const [totalCartItem, setTotalCartItem] = useState(0);
+  const { updateCart } = useContext(UpdateCartContext);
+  const jwt = sessionStorage.getItem("jwt");
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const router = useRouter();
   const isLoggedIn = sessionStorage.getItem("jwt") ? true : false;
   const params = usePathname();
@@ -28,6 +38,10 @@ const Header = () => {
     getCategoryList();
   }, []);
 
+  useEffect(() => {
+    getCartItems();
+  }, [updateCart]);
+
   /**
    * Get category list
    */
@@ -35,6 +49,14 @@ const Header = () => {
     GlobalApi.getCategory().then((response) => {
       setCategoryList(response.data.data);
     });
+  };
+
+  /**
+   * Get total cart items
+   */
+  const getCartItems = async () => {
+    const cartItemList = await GlobalApi.getCartItems(user.id, jwt);
+    setTotalCartItem(cartItemList?.length);
   };
 
   const onSignout = () => {
@@ -108,7 +130,10 @@ const Header = () => {
         ) : (
           <>
             <h2 className="flex items-center gap-2 text-lg">
-              <ShoppingBag /> 0
+              <ShoppingBasket className="size-7" />
+              <span className="bg-primary text-white px-2 rounded-full">
+                {totalCartItem}
+              </span>
             </h2>
             <DropdownMenu>
               <DropdownMenuTrigger>
