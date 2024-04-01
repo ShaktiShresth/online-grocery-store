@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import { UpdateCartContext } from "../_context/UpdateCartContext";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -37,6 +38,7 @@ const Header = () => {
   const [categoryList, setCategoryList] = useState([]);
   const [totalCartItem, setTotalCartItem] = useState(0);
   const [cartItemList, setCartItemList] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
   const [loadingDeleteItems, setLoadingDeleteItems] = useState(
     Array(cartItemList.length).fill(false)
   );
@@ -96,6 +98,14 @@ const Header = () => {
       getCartItems();
     });
   };
+
+  useEffect(() => {
+    const total = cartItemList.reduce(
+      (acc, cartItem) => acc + cartItem.amount,
+      0
+    );
+    setSubtotal(total.toFixed(2));
+  }, [cartItemList]);
 
   return (
     <div className="p-3 shadow-sm flex items-center justify-between">
@@ -184,6 +194,20 @@ const Header = () => {
                     />
                   </SheetDescription>
                 </SheetHeader>
+                <SheetClose asChild>
+                  <div className="absolute w-[90%] bottom-6 flex flex-col">
+                    <h2 className="flex justify-between font-bold text-lg">
+                      Subtotal <span>${subtotal}</span>
+                    </h2>
+                    <Button
+                      onClick={() => {
+                        router.push(jwt ? "/checkout" : "/sign-in");
+                      }}
+                    >
+                      Checkout
+                    </Button>
+                  </div>
+                </SheetClose>
               </SheetContent>
             </Sheet>
 

@@ -1,19 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { LoaderIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 const CartItemList = ({ cartItemList, onDeleteItem, loadingDeleteItems }) => {
-  const [subtotal, setSubtotal] = useState(0);
-
-  useEffect(() => {
-    const total = cartItemList.reduce(
-      (acc, cartItem) => acc + cartItem.amount,
-      0
-    );
-    setSubtotal(total.toFixed(2));
-  }, [cartItemList]);
-
   return (
     <div>
       <div className="h-[600px] overflow-auto">
@@ -46,12 +34,6 @@ const CartItemList = ({ cartItemList, onDeleteItem, loadingDeleteItems }) => {
             )}
           </div>
         ))}
-      </div>
-      <div className="absolute w-[90%] bottom-6 flex flex-col">
-        <h2 className="flex justify-between font-bold text-lg">
-          Subtotal <span>${subtotal}</span>
-        </h2>
-        <Button>Checkout</Button>
       </div>
     </div>
   );
