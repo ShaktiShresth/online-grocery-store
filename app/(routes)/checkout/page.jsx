@@ -1,16 +1,15 @@
 "use client";
 
 import GlobalApi from "@/app/_utils/GlobalApi";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowBigRight } from "lucide-react";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Checkout = () => {
   const [totalCartItem, setTotalCartItem] = useState(0);
   const [cartItemList, setCartItemList] = useState([]);
-  const [subtotal, setSubtotal] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
   const jwt = sessionStorage.getItem("jwt");
   const user = JSON.parse(sessionStorage.getItem("user"));
   const router = useRouter();
@@ -20,6 +19,8 @@ const Checkout = () => {
   const [phone, setPhone] = useState("");
   const [zip, setZip] = useState("");
   const [address, setAddress] = useState("");
+
+  const [totalAmount, setTotalAmount] = useState();
 
   /**
    * Get total cart items
@@ -39,16 +40,21 @@ const Checkout = () => {
   }, []);
 
   useEffect(() => {
-    const total = cartItemList.reduce(
-      (acc, cartItem) => acc + cartItem.amount,
-      0
-    );
-    setSubtotal(total.toFixed(2));
+    let total = 0;
+    cartItemList.forEach((elem) => {
+      total += elem.amount;
+    });
+    setTotalAmount((total * 0.9 + 15).toFixed(2));
+    setSubTotal(total.toFixed(2));
   }, [cartItemList]);
 
   const calculateTotalAmt = () => {
-    const totalAmt = subtotal * 0.9 + 15;
+    const totalAmt = subTotal * 0.9 + 15;
     return totalAmt.toFixed(2);
+  };
+
+  const onApprove = (data) => {
+    console.log(data);
   };
 
   return (
@@ -92,7 +98,7 @@ const Checkout = () => {
           </h2>
           <div className="p-4 flex flex-col gap-4">
             <h2 className="font-bold flex justify-between">
-              Subtotal : <span>${subtotal}</span>
+              Subtotal : <span>${subTotal}</span>
             </h2>
             <hr />
             <h2 className="flex justify-between">
@@ -105,9 +111,23 @@ const Checkout = () => {
             <h2 className="flex justify-between font-bold">
               Total : <span>${calculateTotalAmt()}</span>
             </h2>
-            <Button>
-              Payment <ArrowBigRight />
-            </Button>
+            <PayPalButtons
+              className="paypal_btn"
+              style={{ layout: "horizontal" }}
+              onApprove={onApprove}
+              createOrder={(data, actions) => {
+                return actions.order.create({
+                  purchase_units: [
+                    {
+                      amount: {
+                        value: totalAmount,
+                        currency_code: "USD",
+                      },
+                    },
+                  ],
+                });
+              }}
+            />
           </div>
         </div>
       </div>
