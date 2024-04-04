@@ -1,12 +1,12 @@
 "use client";
 
 import GlobalApi from "@/app/_utils/GlobalApi";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { TriangleAlert } from "lucide-react";
 
 const Checkout = () => {
   const [totalCartItem, setTotalCartItem] = useState(0);
@@ -72,8 +72,11 @@ const Checkout = () => {
       },
     };
     GlobalApi.createOrder(payload, jwt).then((resp) => {
-      console.log(resp);
       toast("Order successfully placed!");
+      cartItemList.forEach((item, index) => {
+        GlobalApi.deleteCartItem(item.id).then((resp) => {});
+      });
+      router.replace("/order-confirmation");
     });
   };
 
@@ -111,6 +114,11 @@ const Checkout = () => {
               onChange={(ev) => setAddress(ev.target.value)}
             />
           </div>
+          <p className="text-gray-300 mt-6 text-sm flex items-center gap-2 justify-center">
+            <TriangleAlert className="size-5" />
+            Please make sure to provide the required details in order to proceed
+            for the payment.
+          </p>
         </div>
         <div className="mx-20 lg:mx-10 border mt-5 lg:mt-0">
           <h2 className="p-3 bg-gray-200 font-bold text-center">
@@ -132,13 +140,9 @@ const Checkout = () => {
               Total : <span>${calculateTotalAmt()}</span>
             </h2>
 
-            {/* just to check the payment for now*/}
-            <Button onClick={() => onApprove({ paymentId: 123 })}>
-              Payment
-            </Button>
-
             {totalAmount > 15 && (
               <PayPalButtons
+                disabled={!(username && email && phone && address && zip)}
                 className="paypal_btn"
                 style={{ layout: "horizontal" }}
                 onApprove={onApprove}
