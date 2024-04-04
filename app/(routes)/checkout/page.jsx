@@ -1,10 +1,12 @@
 "use client";
 
 import GlobalApi from "@/app/_utils/GlobalApi";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Checkout = () => {
   const [totalCartItem, setTotalCartItem] = useState(0);
@@ -55,6 +57,24 @@ const Checkout = () => {
 
   const onApprove = (data) => {
     console.log(data);
+
+    const payload = {
+      data: {
+        paymentId: data.paymentId.toString(),
+        totalOrderAmt: totalAmount,
+        username: username,
+        email: email,
+        phone: phone,
+        zip: zip,
+        address: address,
+        orderItemList: cartItemList,
+        userId: user.id,
+      },
+    };
+    GlobalApi.createOrder(payload, jwt).then((resp) => {
+      console.log(resp);
+      toast("Order successfully placed!");
+    });
   };
 
   return (
@@ -111,23 +131,31 @@ const Checkout = () => {
             <h2 className="flex justify-between font-bold">
               Total : <span>${calculateTotalAmt()}</span>
             </h2>
-            <PayPalButtons
-              className="paypal_btn"
-              style={{ layout: "horizontal" }}
-              onApprove={onApprove}
-              createOrder={(data, actions) => {
-                return actions.order.create({
-                  purchase_units: [
-                    {
-                      amount: {
-                        value: totalAmount,
-                        currency_code: "USD",
+
+            {/* just to check the payment for now*/}
+            <Button onClick={() => onApprove({ paymentId: 123 })}>
+              Payment
+            </Button>
+
+            {totalAmount > 15 && (
+              <PayPalButtons
+                className="paypal_btn"
+                style={{ layout: "horizontal" }}
+                onApprove={onApprove}
+                createOrder={(data, actions) => {
+                  return actions.order.create({
+                    purchase_units: [
+                      {
+                        amount: {
+                          value: totalAmount,
+                          currency_code: "USD",
+                        },
                       },
-                    },
-                  ],
-                });
-              }}
-            />
+                    ],
+                  });
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
