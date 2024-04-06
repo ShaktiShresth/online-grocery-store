@@ -89,6 +89,25 @@ const createOrder = (data, jwt) =>
     },
   });
 
+const getMyOrder = (userId, jwt) =>
+  axiosClient
+    .get(
+      `/orders?filters[userId][$eq]=${userId}&populate[orderItemList][populate][product][populate][images]=url`
+    )
+    .then((resp) => {
+      const response = resp.data.data;
+      const orderList = response.map((item) => ({
+        id: item.id,
+        totalOrderAmount: item.attributes.totalOrderAmt,
+        paymentId: item.attributes.paymentId,
+        orderItemList: item.attributes.orderItemList,
+        createdAt: item.attributes.createdAt,
+        status: item.attributes.Status,
+      }));
+
+      return orderList;
+    });
+
 export default {
   getCategory,
   getSliders,
@@ -101,4 +120,5 @@ export default {
   getCartItems,
   deleteCartItem,
   createOrder,
+  getMyOrder,
 };

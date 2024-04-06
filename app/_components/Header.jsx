@@ -110,7 +110,9 @@ const Header = () => {
   return (
     <div className="p-3 shadow-sm flex items-center justify-between">
       <div className="flex items-center gap-8">
-        <Image src="/logo.png" width={40} height={40} alt="grocery logo" />
+        <Link href={"/"}>
+          <Image src="/logo.png" width={40} height={40} alt="grocery logo" />
+        </Link>
 
         {isLoggedIn && (
           <>
@@ -221,9 +223,11 @@ const Header = () => {
                 <DropdownMenuItem className="cursor-pointer">
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  My Order
-                </DropdownMenuItem>
+                <Link href={"/my-order"}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    My Order
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem
                   className="cursor-pointer"
                   onClick={() => onSignout()}
